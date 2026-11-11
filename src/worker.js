@@ -1,4 +1,4 @@
-// Cut Plan API. Static files in ./public are served by the assets binding; this Worker handles /api/*.
+// Plateful API. Static files in ./public are served by the assets binding; this Worker handles /api/*.
 //
 //   /api/auth/google     start Google sign-in
 //   /api/auth/callback   Google returns here; sets a signed session cookie
@@ -174,7 +174,7 @@ async function importApi(env, request, url) {
   }
   let html;
   try {
-    const res = await fetch(target.toString(), { headers: { "user-agent": "Mozilla/5.0 (compatible; CutPlanRecipeImport/1.0)", accept: "text/html" }, redirect: "follow" });
+    const res = await fetch(target.toString(), { headers: { "user-agent": "Mozilla/5.0 (compatible; PlatefulRecipeImport/1.0)", accept: "text/html" }, redirect: "follow" });
     if (!res.ok) return json({ error: "fetch failed", status: res.status }, 502);
     html = (await res.text()).slice(0, 3_000_000);
   } catch {

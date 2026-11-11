@@ -1,6 +1,6 @@
-# Cut Plan
+# Plateful
 
-Installable web app (PWA) for the cut plan: four plates a day with times and portions, weight trend, shopping list.
+Installable web app (PWA): four planned plates a day with times and portions, for losing, gaining or holding weight. Training plan, habit calendar, weight trend, shopping list.
 Runs as one Cloudflare Worker: static files from `public/`, plus `/api/state`, which stores one JSON document in KV so every device shows the same data.
 
 ## Deploy

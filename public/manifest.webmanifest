@@ -1,7 +1,7 @@
 {
-  "name": "Cut Plan",
-  "short_name": "Cut Plan",
-  "description": "What to eat and when, with a weight trend that tells you when to change it.",
+  "name": "Plateful",
+  "short_name": "Plateful",
+  "description": "Four planned plates a day, a simple training plan and a weight trend that tells you when to change the food.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",

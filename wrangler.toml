@@ -12,10 +12,10 @@ binding = "ASSETS"
 # 2) paste the id it prints below
 [[kv_namespaces]]
 binding = "CUTPLAN"
-id = "PASTE_KV_NAMESPACE_ID"
+id = "bea12d99854848c6ac7f3c257e1f5f70"
 
 # Change to the hostname you want. The zone must already be on your Cloudflare account;
 # Cloudflare creates the DNS record and certificate for you.
 [[routes]]
-pattern = "cut.example.com"
+pattern = "habitapp.yehu.dev"
 custom_domain = true

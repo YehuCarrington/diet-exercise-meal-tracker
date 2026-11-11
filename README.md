@@ -10,7 +10,7 @@ Needs Node 18+ and a domain already on your Cloudflare account.
 ```sh
 npx wrangler login
 npx wrangler kv namespace create CUTPLAN      # copy the id into wrangler.toml
-# edit wrangler.toml: set the KV id and your hostname (pattern = "cut.yourdomain.com")
+# edit wrangler.toml: set the KV id and your hostname (pattern = "habitapp.yehu.dev")
 openssl rand -base64 32                        # this is your sync key, keep it
 npx wrangler secret put SYNC_KEY               # paste the key when asked
 npx wrangler deploy
@@ -30,7 +30,7 @@ After that, a push to `main` is live in about a minute. `SYNC_KEY` stays in Clou
 
 ## Install on iPad or iPhone
 
-1. Open `https://cut.yourdomain.com` in Safari.
+1. Open `https://habitapp.yehu.dev` in Safari.
 2. Share, then Add to Home Screen.
 3. Open it from the home screen, go to Setup, paste the sync key, tap Connect. The Today screen should say "Synced".
 4. Repeat on each device with the same key.

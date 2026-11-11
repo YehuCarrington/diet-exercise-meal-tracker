@@ -347,17 +347,21 @@ function targets(){
 function times(){var w=mins(S.settings.wake),b=mins(S.settings.bed);if(b<=w)b+=1440;
   var d=Math.min(w+750,b-210),sn=Math.min(w+570,d-150),l=Math.min(w+360,sn-150);
   return {b:Math.min(w+45,l-150),l:l,s:sn,d:d,close:b-180};}
+function isMeat(it){return it.u==="g"&&!it.raw&&it.k>0&&it.p/it.k>.12;}
 function dayPlan(date){
   var k=key(date),base=WEEK[dow(date)],sw=S.swaps[k]||{},T=targets(),picks=[],fixed=0,carb=0;
-  SLOTS.forEach(function(sl,i){var list=MEALS[sl.id],sv=sw[sl.id],m=typeof sv==="string"?customMeal(sv.slice(2)):null;if(!m){var idx=typeof sv==="number"?sv:base[i];m=list[allowedIdx(sl.id,idx%list.length)];}picks.push(m);
-    m.it.forEach(function(it){if(it.c)carb+=it.q*it.k;else fixed+=it.q*it.k;});});
+  SLOTS.forEach(function(sl,i){var list=MEALS[sl.id],sv=sw[sl.id],m=typeof sv==="string"?customMeal(sv.slice(2)):null;if(!m){var idx=typeof sv==="number"?sv:base[i];m=list[allowedIdx(sl.id,idx%list.length)];}picks.push(m);});
+  /* gaining: the recipes were written for a cut, so trim meat and fish toward about 1.3x the protein floor and let starch carry the surplus */
+  var ps=1;
+  if(mode()==="gain"){var bp=0,mp=0;picks.forEach(function(m){m.it.forEach(function(it){bp+=it.q*it.p;if(isMeat(it))mp+=it.q*it.p;});});var want=T.protein*1.3;if(bp>want&&mp>0)ps=Math.max(.6,Math.min(1,1-(bp-want)/mp));}
+  picks.forEach(function(m){m.it.forEach(function(it){var q0=isMeat(it)?it.q*ps:it.q;if(it.c)carb+=q0*it.k;else fixed+=q0*it.k;});});
   var extra=S.train[k]?105:0;
   var fr=carb?(T.target-fixed)/carb:1,f=Math.max(.6,Math.min(2,fr)),g=1,tk=0,tp=0;
   /* when starch alone cannot reach the target (small or large eaters), scale the rest of the plate too */
   if(fixed&&(fr<.6||fr>2))g=Math.max(.6,Math.min(1.6,(T.target-f*carb)/fixed));
   var meals=picks.map(function(m,i){var k2=0,p=0;var items=m.it.map(function(it){
-      var q=it.q;if(it.c){q=it.u==="g"?it.q*f:Math.max(.25,Math.round(it.q*f*4)/4);if(it.u===""||it.u==="slice")q=Math.max(1,Math.round(it.q*f));}
-      else if(g!==1&&!m.free){if(it.u==="g")q=it.q*g;else if(it.u==="cup")q=Math.max(.25,Math.round(it.q*g*4)/4);}
+      var q0=isMeat(it)?it.q*ps:it.q,q=q0;if(it.c){q=it.u==="g"?it.q*f:Math.max(.25,Math.round(it.q*f*4)/4);if(it.u===""||it.u==="slice")q=Math.max(1,Math.round(it.q*f));}
+      else if(g!==1&&!m.free){if(it.u==="g")q=q0*g;else if(it.u==="cup")q=Math.max(.25,Math.round(it.q*g*4)/4);}
       k2+=q*it.k;p+=q*it.p;return {x:qty(it,q),i:icon(it.t)};});
     if(S.train[k]&&SLOTS[i].id==="s"){items.push({x:"1 extra banana, 60 to 90 min before training",i:"🍌"});k2+=105;p+=1;}
     tk+=k2;tp+=p;return {slot:SLOTS[i],meal:m,items:items,kcal:Math.round(k2/10)*10,prot:Math.round(p)};});

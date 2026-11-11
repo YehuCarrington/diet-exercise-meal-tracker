@@ -19,7 +19,7 @@
 :root{
   --bg:#eef2ee; --surface:#ffffff; --ink:#13201b; --muted:#5b6a63; --line:#d5ddd7;
   --accent:#0d7355; --accent-ink:#ffffff; --accent-soft:#dcefe7;
-  --warn:#b4540a; --warn-soft:#fbead6; --bad:#b3261e; --protein:#b4540a;
+  --warn:#b4540a; --warn-soft:#fbead6; --bad:#b3261e; --protein:#2f6fb0;
   --display:"Bricolage Grotesque","Avenir Next Condensed","Trebuchet MS",sans-serif;
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
 }
@@ -27,13 +27,13 @@
   :root:not([data-theme="light"]){
     --bg:#0e1513; --surface:#17211e; --ink:#e7eeea; --muted:#94a39b; --line:#2a3833;
     --accent:#45cc9d; --accent-ink:#06231a; --accent-soft:#1b3a30;
-    --warn:#f0a35a; --warn-soft:#3a2a17; --bad:#ff8a80; --protein:#f0a35a; color-scheme:dark;
+    --warn:#f0a35a; --warn-soft:#3a2a17; --bad:#ff8a80; --protein:#7fb4ee; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0e1513; --surface:#17211e; --ink:#e7eeea; --muted:#94a39b; --line:#2a3833;
   --accent:#45cc9d; --accent-ink:#06231a; --accent-soft:#1b3a30;
-  --warn:#f0a35a; --warn-soft:#3a2a17; --bad:#ff8a80; --protein:#f0a35a; color-scheme:dark;
+  --warn:#f0a35a; --warn-soft:#3a2a17; --bad:#ff8a80; --protein:#7fb4ee; color-scheme:dark;
 }
 *{box-sizing:border-box}
 html,body{margin:0}
@@ -76,6 +76,13 @@ button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible,t
 .chips{display:flex;flex-wrap:wrap;gap:6px}
 .chip{display:inline-flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:5px 11px 5px 7px;font-size:14px}
 .chip .e{font-size:18px;line-height:1}
+button.chip{cursor:pointer;min-height:42px;font:inherit;font-size:14px;color:inherit}
+.chip.on{background:var(--accent-soft);border-color:var(--accent)}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opt{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;min-height:46px}
+.opt.on{border-color:var(--accent);background:var(--accent-soft)}
+.err{color:var(--bad);font-size:14px}
+.lift{flex:0 0 120px}
 .tag{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
 .tag b{color:var(--ink)}
 details summary{cursor:pointer;font-size:14px;color:var(--accent);font-weight:600;min-height:32px;display:flex;align-items:center}
@@ -242,18 +249,18 @@ var SCIENCE=[
  {h:"Why packaged and fried food is out by default",b:"In a month-long NIH feeding trial, 20 adults were given either ultra-processed or minimally processed meals matched for calories on offer, and told to eat as much as they wanted. They ate about 500 kcal a day more on the ultra-processed menu and gained weight, then lost it on the whole-food menu. Nobody felt they were overeating. Pies, sweet drinks and candy bars work on you the same way.",
   src:[["NIH: heavily processed foods cause overeating and weight gain","https://www.nih.gov/news-events/news-releases/nih-study-finds-heavily-processed-foods-cause-overeating-weight-gain"]]},
  {h:"Why set times",b:"Meal timing does not burn fat by itself. Fixed times matter because of what happens without them: a skipped breakfast turns into a fried pastry at 10, a crash after lunch turns into a candy bar, and a light dinner turns into snacking at night. Four planned plates remove those decisions. The kitchen closing 3 hours before bed is for your reflux as much as for the calories."},
- {h:"Why weigh every day",b:"Your weight swings 2 to 4 lb from water, salt and food in transit, so a single reading tells you nothing. Weigh each morning after the bathroom, before eating, and read only the 7-day average. The Progress tab does this for you and tells you when to change the food."},
+ {h:"Why weigh every day",b:"Your weight swings 2 to 4 lb from water, salt and food in transit, so a single reading tells you nothing. Weigh each morning after the bathroom, before eating, and read only the 7-day average. The Track tab does this for you and tells you when to change the food."},
  {h:"Why earlier attempts did not work",b:"The usual cause is not effort. People consistently eat more than they believe they do, and the extra comes from drinks, oil, bites while cooking and weekend meals. This plan does not ask you to count anything. It asks you to eat the listed plates and nothing else, then lets the scale trend check the maths."},
  {h:"Keep lifting",b:"Your three gym days tell your body to keep muscle while the deficit takes fat. Belly fat tends to respond early to a steady deficit plus training. Do not add hours of cardio to make up for off-plan eating."}
 ];
 
 /* ---------- state ---------- */
 var KEY="cutplan-v1";
-var DEF={v:1,updated:0,settings:{start:207,goal:180,height:70,age:30,wake:"06:00",bed:"22:30",adjust:0},weights:{},done:{},swaps:{},train:{},shop:{},workouts:{},water:{}};
+var DEF={v:1,updated:0,settings:{start:207,goal:180,height:70,age:30,wake:"06:00",bed:"22:30",adjust:0},weights:{},done:{},swaps:{},train:{},shop:{},workouts:{},water:{},lifts:{}};
 var S=JSON.parse(JSON.stringify(DEF));
 try{var raw=localStorage.getItem(KEY);if(raw){S=merge(JSON.parse(raw));}}catch(e){}
 function merge(o){var b=JSON.parse(JSON.stringify(DEF));if(!o||typeof o!=="object")return b;
-  ["weights","done","swaps","train","shop","workouts","water"].forEach(function(k){if(o[k]&&typeof o[k]==="object")b[k]=o[k];});
+  ["weights","done","swaps","train","shop","workouts","water","lifts"].forEach(function(k){if(o[k]&&typeof o[k]==="object")b[k]=o[k];});
   if(o.settings)for(var k in b.settings)if(o.settings[k]!==undefined)b.settings[k]=o.settings[k];
   b.updated=o.updated||0;return b;}
 var syncState="device",saveTimer=null,writing=Promise.resolve();
@@ -312,19 +319,20 @@ function targets(){
   return {bmr:Math.round(bmr),tdee:Math.round(tdee/10)*10,target:target,protein:Math.round(1.5*kg/5)*5};
 }
 function times(){var w=mins(S.settings.wake),b=mins(S.settings.bed);if(b<=w)b+=1440;
-  return {b:w+45,l:w+360,s:w+570,d:Math.min(w+750,b-210),close:b-180};}
+  var d=Math.min(w+750,b-210),sn=Math.min(w+570,d-150),l=Math.min(w+360,sn-150);
+  return {b:Math.min(w+45,l-150),l:l,s:sn,d:d,close:b-180};}
 function dayPlan(date){
   var k=key(date),base=WEEK[dow(date)],sw=S.swaps[k]||{},T=targets(),picks=[],fixed=0,carb=0;
   SLOTS.forEach(function(sl,i){var list=MEALS[sl.id],idx=sw[sl.id]!==undefined?sw[sl.id]:base[i];var m=list[idx%list.length];picks.push(m);
     m.it.forEach(function(it){if(it.c)carb+=it.q*it.k;else fixed+=it.q*it.k;});});
   var extra=S.train[k]?105:0;
-  var f=carb?Math.max(.6,Math.min(1.6,(T.target-fixed-extra)/carb)):1,tk=extra,tp=extra?1:0;
+  var f=carb?Math.max(.6,Math.min(1.6,(T.target-fixed)/carb)):1,tk=0,tp=0;
   var meals=picks.map(function(m,i){var k2=0,p=0;var items=m.it.map(function(it){
       var q=it.q;if(it.c){q=it.u==="g"?it.q*f:Math.max(.25,Math.round(it.q*f*4)/4);if(it.u===""||it.u==="slice")q=Math.max(1,Math.round(it.q*f));}
       k2+=q*it.k;p+=q*it.p;return {x:qty(it,q),i:icon(it.t)};});
-    if(S.train[k]&&SLOTS[i].id==="s"){items.push({x:"1 extra banana, 60 to 90 min before training",i:"🍌"});}
+    if(S.train[k]&&SLOTS[i].id==="s"){items.push({x:"1 extra banana, 60 to 90 min before training",i:"🍌"});k2+=105;p+=1;}
     tk+=k2;tp+=p;return {slot:SLOTS[i],meal:m,items:items,kcal:Math.round(k2/10)*10,prot:Math.round(p)};});
-  return {key:k,meals:meals,kcal:Math.round(tk/10)*10,prot:Math.round(tp),T:T};
+  return {key:k,meals:meals,kcal:Math.round(tk/10)*10,prot:Math.round(tp),T:T,target:T.target+extra};
 }
 function adherence(n){var t=new Date(),got=0,tot=0;for(var i=1;i<=n;i++){var d=S.done[key(addDays(t,-i))];if(d!==undefined||i<=n){tot+=4;if(d)got+=Object.keys(d).length;}}return tot?got/tot:0;}
 function daysUsed(){var ks=Object.keys(S.done).concat(Object.keys(S.weights)).sort();if(!ks.length)return 0;return Math.round((new Date()-parseKey(ks[0]))/864e5);}
@@ -400,6 +408,10 @@ function streaks(){
 function nextDay(){var ks=Object.keys(S.workouts).filter(function(k){return S.workouts[k].fin;}).sort();if(!ks.length)return "A";return {A:"B",B:"C",C:"A"}[S.workouts[ks[ks.length-1]].d]||"A";}
 function todayWorkout(){var k=key(new Date());return S.workouts[k]||{d:trainSel||nextDay(),sets:{}};}
 
+function forecast(){var s=S.settings,cur=currentWeight(),left=Math.max(0,cur-s.goal),tr=trend(),rate=tr.rate&&tr.rate>=.4?Math.min(tr.rate,2):.9;
+  return {cur:cur,left:left,rate:rate,tr:tr,eta:left?addDays(new Date(),Math.round(left/rate*7)):null};}
+function mealTotals(m){var k=0,p=0;m.it.forEach(function(it){k+=it.q*it.k;p+=it.q*it.p;});return {k:Math.round(k/10)*10,p:Math.round(p)};}
+
 /* ---------- small visual builders ---------- */
 function ring(n,size){var r=40,C=2*Math.PI*r,seg=C/4-6,g='<svg class="ring" viewBox="0 0 100 100" width="'+size+'" height="'+size+'" role="img" aria-label="'+n+' of 4 plates eaten">';
   for(var i=0;i<4;i++)g+='<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="'+(i<n?"var(--accent)":"var(--line)")+'" stroke-width="11" stroke-linecap="round" stroke-dasharray="'+seg.toFixed(1)+" "+(C-seg).toFixed(1)+'" transform="rotate('+(i*90-90+4)+' 50 50)"/>';
@@ -411,7 +423,7 @@ function chips(items){return '<div class="chips">'+items.map(function(x){return 
 /* ---------- views ---------- */
 var NAV={today:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/>',plan:'<rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/>',train:'<path d="M3 9v6M6 6v12M18 6v12M21 9v6M6 12h12"/>',track:'<path d="M4 19V5M4 19h16M7 15l4-4 3 3 5-6"/>',more:'<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'};
 var TABS=[["today","Today"],["plan","Plan"],["train","Train"],["track","Track"],["more","More"]];
-var sub={plan:"week",track:"calendar",more:"setup"},planDay=null,trainSel=null,calMonth=null,calSel=null,resetArmed=false;
+var sub={plan:"week",track:"calendar",more:"setup"},planDay=null,trainSel=null,calMonth=null,calSel=null,resetArmed=false,swapOpen=null,editW=false,wErr="",finArmed=false;
 function route(){var h=(location.hash||"").replace("#","");return TABS.some(function(t){return t[0]===h;})?h:"today";}
 function render(){
   var r=route();
@@ -423,24 +435,31 @@ function vToday(){
   var now=new Date(),P=dayPlan(now),tm=times(),nowM=now.getHours()*60+now.getMinutes(),done=S.done[P.key]||{},n=plates(P.key),nextSet=false,w=S.weights[P.key],ek=0,ep=0,water=S.water[P.key]||0;
   P.meals.forEach(function(m){if(done[m.slot.id]){ek+=m.kcal;ep+=m.prot;}});
   var h='<header class="row spread"><div><p class="muted small">'+DAYS[dow(now)]+", "+now.toLocaleDateString(undefined,{day:"numeric",month:"short"})+'</p><h1>Today</h1></div><span class="sync" id="sync">'+syncText()+'</span></header>';
-  h+='<div class="card hero">'+ring(n,104)+'<div class="grow" style="display:flex;flex-direction:column;gap:12px">'+meter("Energy",ek,P.kcal,"kcal")+meter("Protein",ep,P.prot,"g","p")+'</div></div>';
+  var F=forecast(),yk=key(addDays(now,-1)),used=daysUsed();
+  h+='<p class="small muted num">🎯 '+F.cur.toFixed(0)+' → '+S.settings.goal+' lb'+(F.eta?' · about '+F.eta.toLocaleDateString(undefined,{month:"short",year:"numeric"}):"")+(used>0?' · day '+(used+1)+' · yesterday '+plates(yk)+'/4':"")+'</p>';
+  h+='<div class="card hero">'+ring(n,104)+'<div class="grow" style="display:flex;flex-direction:column;gap:12px">'+meter("Energy",ek,P.target,"kcal")+meter("Protein, minimum",ep,P.T.protein,"g","p")+'</div></div>';
   var rail='<div class="rail" aria-hidden="true">',firstOpen=null;
   P.meals.forEach(function(m){var id=m.slot.id,d=!!done[id];if(!d&&!firstOpen)firstOpen=id;rail+='<div class="stop'+(d?" done":"")+(firstOpen===id?" next":"")+'"><span class="dot">'+(d?"✓":SLOTE[id])+'</span>'+clock(tm[id]).replace(" ","")+'</div>';});
   h+=rail+'<div class="stop"><span class="dot">🔒</span>'+clock(tm.close).replace(" ","")+'</div></div>';
-  if(!w)h+='<div class="card"><div class="row"><span class="slotic" aria-hidden="true">⚖️</span><label class="f" for="wq">Morning weight, lb<input id="wq" type="number" inputmode="decimal" step="0.1" min="100" max="400" placeholder="'+currentWeight().toFixed(1)+'"></label><button class="btn primary" data-act="logw" data-src="wq">Log</button></div></div>';
+  if(n===4)h+='<div class="note" style="background:var(--accent-soft)"><span class="e" aria-hidden="true">✅</span><span><b>All four plates.</b> That is the whole job for today.</span></div>';
+  if(!w||editW)h+='<div class="card"><div class="row"><span class="slotic" aria-hidden="true">⚖️</span><label class="f" for="wq">Morning weight, lb<input id="wq" type="number" inputmode="decimal" step="0.1" min="100" max="400" value="'+(w||"")+'" placeholder="'+currentWeight().toFixed(1)+'"></label><button class="btn primary" data-act="logw" data-src="wq">Log</button></div>'+(wErr?'<p class="err" role="alert">'+wErr+'</p>':"")+'</div>';
+  else h+='<div class="card"><div class="row spread"><div class="row"><span class="slotic" aria-hidden="true">⚖️</span><span><b class="num">'+w.toFixed(1)+' lb</b> logged this morning</span></div><button class="btn" data-act="editw">Edit</button></div></div>';
   P.meals.forEach(function(m){
     var id=m.slot.id,isDone=!!done[id],isNext=!isDone&&!nextSet;if(isNext)nextSet=true;
     h+='<section class="card meal'+(isDone?" done":"")+(isNext?" next":"")+'"><div class="row spread"><div class="row"><span class="slotic" aria-hidden="true">'+SLOTE[id]+'</span><div><span class="time">'+clock(tm[id])+'</span><span class="muted small">'+m.slot.label+'</span></div></div>'+(isNext?'<span class="pill'+(nowM>tm[id]+45?" warn":"")+'">'+(nowM>tm[id]+45?"Overdue":"Next")+'</span>':isDone?'<span class="pill">✓ Eaten</span>':"")+'</div>';
     h+='<h2>'+esc(m.meal.n)+'</h2>'+chips(m.items);
     h+='<div class="row"><span class="tag">🔥 <b>'+m.kcal+'</b> kcal</span><span class="tag">💪 <b>'+m.prot+' g</b> protein</span></div>';
     h+='<p class="small">'+esc(m.meal.how)+'</p><details><summary>Why this plate</summary><p>'+esc(m.slot.why)+'</p></details>';
-    h+='<div class="row"><button class="btn big '+(isDone?"":"primary")+'" data-act="done" data-id="'+id+'">'+(isDone?"Undo":"✓ Eaten")+'</button><button class="btn" data-act="swap" data-id="'+id+'" aria-label="Swap for another option">⟳ Swap</button></div></section>';
+    h+='<div class="row"><button class="btn big '+(isDone?"":"primary")+'" data-act="done" data-id="'+id+'">'+(isDone?"Undo":"✓ Eaten")+'</button><button class="btn" data-act="swap" data-id="'+id+'" aria-expanded="'+(swapOpen===id)+'">⟳ Swap</button></div>';
+    if(swapOpen===id){var curIdx=(S.swaps[P.key]&&S.swaps[P.key][id]!==undefined)?S.swaps[P.key][id]:WEEK[dow(now)][SLOTS.indexOf(m.slot)];
+      h+='<div class="opts">'+MEALS[id].map(function(o,oi){if(o.free&&dow(now)!==5)return "";var mt=mealTotals(o);return '<button class="opt'+(oi===curIdx?" on":"")+'" data-act="pick" data-id="'+id+'" data-n="'+oi+'"><span>'+esc(o.n)+'</span><span class="tag">'+mt.k+' kcal · '+mt.p+' g</span></button>';}).join("")+'</div>';}
+    h+='</section>';
   });
   h+='<div class="note"><span class="e" aria-hidden="true">🔒</span><span><b>Kitchen closes '+clock(tm.close)+'.</b> Water or unsweetened tea after that.</span></div>';
   h+='<div class="card"><div class="row spread"><h3>Water</h3><span class="tag"><b>'+(water*.5).toFixed(1)+'</b> / 2.5 L</span></div><div class="drops">';
   for(var i=1;i<=5;i++)h+='<button class="drop'+(i<=water?" on":"")+'" data-act="water" data-n="'+i+'" aria-label="'+(i*.5)+' litres drunk" aria-pressed="'+(i<=water)+'">💧</button>';
   h+='</div></div>';
-  h+='<button class="toggle'+(S.train[P.key]?" on":"")+'" data-act="train" aria-pressed="'+!!S.train[P.key]+'"><span class="slotic" aria-hidden="true">🏋️</span><span>'+(S.train[P.key]?"Gym day: banana added before training":"Gym day today?")+'</span></button>';
+  h+='<button class="toggle'+(S.train[P.key]?" on":"")+'" data-act="train" aria-pressed="'+!!S.train[P.key]+'"><span class="slotic" aria-hidden="true">🏋️</span><span>'+(S.train[P.key]?"Gym day: one banana added to your snack, nothing else changes":"Gym day today?")+'</span></button>';
   h+='<div class="tiles"><div class="tile"><span class="e">🥤</span>No sweet drinks</div><div class="tile"><span class="e">🍟</span>Nothing fried</div><div class="tile"><span class="e">📦</span>Nothing from a packet</div><div class="tile"><span class="e">🥒</span>Hungry? Cucumber or pawpaw</div></div>';
   return h;
 }
@@ -462,9 +481,9 @@ function vPlan(){
     h+='<button class="btn" data-act="shopreset">Untick all for next week</button>';
     h+='<div class="tiles"><div class="tile"><span class="e">🥤</span>No soft drinks or juice</div><div class="tile"><span class="e">🍪</span>No biscuits or chips</div><div class="tile"><span class="e">🌭</span>No sausages or noodles</div><div class="tile"><span class="e">🥛</span>No milk or yogurt</div></div>';
   }else{
+    h+='<p class="small muted">These are base portions. Today adjusts the rice, bread and provision to hit your daily target, so amounts there can differ. Tap Swap on a plate to choose any of these.</p>';
     SLOTS.forEach(function(sl){h+='<div class="card"><div class="row"><span class="slotic" aria-hidden="true">'+SLOTE[sl.id]+'</span><h2>'+sl.label+'</h2></div>'+MEALS[sl.id].map(function(m){var k=0,p=0;m.it.forEach(function(it){k+=it.q*it.k;p+=it.q*it.p;});
-      return '<details><summary>'+esc(m.n)+'&nbsp;<span class="tag">· '+Math.round(k/10)*10+' kcal · '+Math.round(p)+' g</span></summary>'+chips(m.it.map(function(it){return {x:qty(it,it.q),i:icon(it.t)};}))+'<p>'+esc(m.how)+'</p></details>';}).join("")+'</div>';});
-    h+='<p class="small muted">Standard portions. Today scales them to your target. Use Swap on a plate to pick one of these.</p>';
+      return '<details><summary><span>'+esc(m.n)+'<br><span class="tag">'+Math.round(k/10)*10+' kcal · '+Math.round(p)+' g protein</span></span></summary>'+chips(m.it.map(function(it){return {x:qty(it,it.q),i:icon(it.t)};}))+'<p>'+esc(m.how)+'</p></details>';}).join("")+'</div>';});
   }
   return h;
 }
@@ -474,14 +493,15 @@ function vTrain(){
   var h='<header class="row spread"><div><p class="muted small">Day '+w.d+(S.workouts[k]?"":" · next in your rotation")+'</p><h1>'+W.e+" "+W.t+'</h1></div>'+(w.fin?'<span class="pill">✓ Logged</span>':"")+'</header>';
   h+=seg("trainday",[["A","Day A"],["B","Day B"],["C","Day C"]],w.d);
   h+='<div class="card">'+meter("Sets done",got,tot,"sets")+'</div>';
+  h+='<div class="note"><span class="e" aria-hidden="true">🎚️</span><span><b>Choosing a weight.</b> Pick one you could lift two more times than listed. Needs a gym with machines and cables.</span></div>';
   W.ex.forEach(function(x,i){var d=w.sets[i]||0;
-    h+='<section class="card ex"><div class="row spread"><h3>'+(i+1)+". "+esc(x.n)+'</h3><span class="reps">'+x.s+" × "+x.r+'</span></div><div class="sets">';
+    h+='<section class="card ex"><div class="row spread"><h3>'+(i+1)+". "+esc(x.n)+'</h3><span class="reps">'+x.s+" × "+x.r+'</span></div><div class="row spread"><div class="sets">';
     for(var s=1;s<=x.s;s++)h+='<button class="set'+(s<=d?" on":"")+'" data-act="set" data-i="'+i+'" data-n="'+s+'" aria-label="Set '+s+" of "+x.s+'" aria-pressed="'+(s<=d)+'">'+(s<=d?"✓":s)+'</button>';
-    h+='</div><ul class="cues">'+x.c.map(function(c){return "<li>"+esc(c)+"</li>";}).join("")+'</ul><a class="demo" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.n+" proper form")+'">▶ Watch demos on YouTube</a></section>';});
+    h+='</div><label class="f lift" for="lf'+i+'">Weight, lb<input id="lf'+i+'" type="number" inputmode="decimal" step="0.5" min="0" data-act="lift" data-n="'+esc(x.n)+'" value="'+(S.lifts[x.n]||"")+'" placeholder="last used"></label></div><ul class="cues">'+x.c.map(function(c){return "<li>"+esc(c)+"</li>";}).join("")+'</ul><a class="demo" target="_blank" rel="noopener" href="https://www.youtube.com/results?search_query='+encodeURIComponent(x.n+" proper form")+'">▶ Watch demos on YouTube</a></section>';});
   h+='<div class="note"><span class="e" aria-hidden="true">🚶</span><span><b>Finisher.</b> '+esc(W.fin)+'.</span></div>';
-  h+='<button class="btn big '+(w.fin?"":"primary")+'" data-act="finish">'+(w.fin?"Undo finished session":"✓ Finish session")+'</button>';
+  h+='<button class="btn big '+(w.fin?"":"primary")+'" data-act="finish">'+(w.fin?"Undo finished session":finArmed?"Only "+got+" of "+tot+" sets ticked. Tap again to log anyway":"✓ Finish session")+'</button>';
   h+='<div class="tiles"><div class="tile"><span class="e">⏱️</span>Rest 60 to 90 s</div><div class="tile"><span class="e">➕</span>All reps done? Add the smallest plate next time</div><div class="tile"><span class="e">🛑</span>Stop 2 reps before failure</div><div class="tile"><span class="e">🍽️</span>Train 90 min after a plate</div></div>';
-  h+='<p class="small muted">Three sessions a week with a rest day between, for example Mon, Wed, Fri. Pick a weight you could lift two more times than listed. Sharp pain means stop that exercise.</p>';
+  h+='<p class="small muted">Three sessions a week with a rest day between, for example Mon, Wed, Fri. Sharp pain means stop that exercise.</p>';
   return h;
 }
 function vTrack(){
@@ -498,16 +518,16 @@ function calView(){
     h+='<button class="cell l'+n+(fut?" fut":"")+(k===tk?" tod":"")+(k===calSel?" sel":"")+'" data-act="calsel" data-k="'+k+'" aria-label="'+k+": "+n+' of 4 plates'+(S.weights[k]?", weighed":"")+(S.train[k]?", trained":"")+'"><span>'+d+'</span><span class="mk" aria-hidden="true">'+(S.weights[k]?"●":"")+(S.train[k]?"▲":"")+'</span></button>';}
   h+='</div><div class="legend"><span><i class="sw"></i>0</span><span><i class="sw" style="background:var(--accent-soft)"></i>1–2</span><span><i class="sw" style="background:var(--accent)"></i>3–4 plates</span><span>● weighed</span><span>▲ trained</span></div></div>';
   var sk=calSel||tk,sp=dayPlan(parseKey(sk)),sd=S.done[sk]||{},wo=S.workouts[sk];
-  h+='<div class="card"><h3>'+parseKey(sk).toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})+'</h3><div class="row">'+sp.meals.map(function(x){return '<span class="chip"><span class="e" aria-hidden="true">'+SLOTE[x.slot.id]+'</span>'+(sd[x.slot.id]?"✓":"–")+'</span>';}).join("")+'<span class="chip"><span class="e" aria-hidden="true">⚖️</span>'+(S.weights[sk]?S.weights[sk].toFixed(1)+" lb":"–")+'</span><span class="chip"><span class="e" aria-hidden="true">🏋️</span>'+(wo&&wo.fin?"Day "+wo.d:S.train[sk]?"✓":"–")+'</span><span class="chip"><span class="e" aria-hidden="true">💧</span>'+((S.water[sk]||0)*.5).toFixed(1)+' L</span></div></div>';
+  h+='<div class="card"><h3>'+parseKey(sk).toLocaleDateString(undefined,{weekday:"long",day:"numeric",month:"long"})+'</h3><div class="row">'+sp.meals.map(function(x){var on=!!sd[x.slot.id];return '<button class="chip'+(on?" on":"")+'" '+(sk>tk?"disabled":"")+' data-act="caldone" data-k="'+sk+'" data-id="'+x.slot.id+'" aria-pressed="'+on+'" aria-label="'+x.slot.label+'"><span class="e" aria-hidden="true">'+SLOTE[x.slot.id]+'</span>'+(on?"✓":"–")+'</button>';}).join("")+'<button class="chip'+(S.train[sk]?" on":"")+'" '+(sk>tk?"disabled":"")+' data-act="caltrain" data-k="'+sk+'" aria-pressed="'+!!S.train[sk]+'" aria-label="Trained"><span class="e" aria-hidden="true">🏋️</span>'+(wo&&wo.fin?"Day "+wo.d:S.train[sk]?"✓":"–")+'</button><button class="chip" '+(sk>tk?"disabled":"")+' data-act="calwater" data-k="'+sk+'" aria-label="Water, tap to add half a litre"><span class="e" aria-hidden="true">💧</span>'+((S.water[sk]||0)*.5).toFixed(1)+' L</button><span class="chip"><span class="e" aria-hidden="true">⚖️</span>'+(S.weights[sk]?S.weights[sk].toFixed(1)+" lb":"–")+'</span></div>'+(sk<=tk?'<p class="small muted">Forgot to log? Tap a plate, the gym or the water to fix this day. Weight is logged under Weight.</p>':"")+'</div>';
   h+='<p class="small muted">A day counts toward your streak at 3 of 4 plates, so one missed snack does not reset it. Missing one day is normal. Never miss two in a row.</p>';
   return h;
 }
 function weightView(){
   var s=S.settings,cur=currentWeight(),lost=s.start-cur,left=Math.max(0,cur-s.goal),tr=trend(),span=Math.max(.1,s.start-s.goal);
   var rate=tr.rate&&tr.rate>=.4?Math.min(tr.rate,2):.9,eta=left?addDays(new Date(),Math.round(left/rate*7)):null;
-  var h='<div class="tiles three"><div class="tile"><span class="e">⚖️</span><b>'+cur.toFixed(1)+'</b>lb, 7-day avg</div><div class="tile"><span class="e">📉</span><b>'+(lost>=0?"−":"+")+Math.abs(lost).toFixed(1)+'</b>lb since start</div><div class="tile"><span class="e">🎯</span><b>'+left.toFixed(1)+'</b>lb to '+s.goal+'</div></div>';
+  var h='<div class="tiles three"><div class="tile"><span class="e">⚖️</span><b>'+cur.toFixed(1)+'</b>'+(windowAvg(0,7)?"lb, 7-day avg":"lb, latest reading")+'</div><div class="tile"><span class="e">📉</span><b>'+(Math.abs(lost)<.05?"":lost>0?"−":"+")+Math.abs(lost).toFixed(1)+'</b>lb since start</div><div class="tile"><span class="e">🎯</span><b>'+left.toFixed(1)+'</b>lb to '+s.goal+'</div></div>';
   h+='<div class="card">'+meter(s.start+" lb → "+s.goal+" lb",Math.max(0,Math.round(lost*10)/10),Math.round(span*10)/10,"lb")+'</div>';
-  h+='<div class="card"><div class="row"><label class="f" for="wd">Date<input id="wd" type="date" value="'+key(new Date())+'" max="'+key(new Date())+'"></label><label class="f" for="wv">Weight, lb<input id="wv" type="number" inputmode="decimal" step="0.1" min="100" max="400"></label></div><button class="btn primary" data-act="logw" data-src="wv">Log weigh-in</button></div>';
+  h+='<div class="card"><div class="row"><label class="f" for="wd">Date<input id="wd" type="date" value="'+key(new Date())+'" max="'+key(new Date())+'"></label><label class="f" for="wv">Weight, lb<input id="wv" type="number" inputmode="decimal" step="0.1" min="100" max="400"></label></div><button class="btn primary" data-act="logw" data-src="wv">Log weigh-in</button><p class="err" id="wverr" role="alert"></p></div>';
   h+='<div class="card"><div id="chart"></div><div class="legend"><span>● daily</span><span style="color:var(--accent)">━ 7-day average</span><span style="color:var(--accent)">┅ goal</span></div></div>';
   var em={wait:"⏳",ok:"✅",fast:"⚠️",adh:"📋",slow:"🔧"}[tr.state];
   h+='<div class="'+(tr.state==="ok"||tr.state==="wait"?"card":"note")+'" style="'+(tr.state==="ok"||tr.state==="wait"?"":"flex-direction:column;align-items:stretch")+'"><div class="row" style="flex-wrap:nowrap;align-items:flex-start"><span class="slotic" aria-hidden="true">'+em+'</span><p class="small">'+esc(tr.msg)+'</p></div>'+(tr.delta?'<button class="btn primary" data-act="adjust" data-delta="'+tr.delta+'">'+(tr.delta<0?"Take 150 kcal off my plates":"Add 150 kcal to my plates")+'</button>':"")+'</div>';
@@ -538,18 +558,24 @@ function fld(id,label,type,val){return '<label class="f" for="f_'+id+'">'+label+
 /* ---------- actions ---------- */
 document.addEventListener("click",function(e){
   var b=e.target.closest("[data-act]");if(!b||b.tagName==="INPUT")return;var a=b.dataset.act,k=key(new Date());
-  if(a==="seg"){if(b.dataset.g==="trainday"){trainSel=b.dataset.v;if(S.workouts[k]&&S.workouts[k].d!==trainSel){S.workouts[k]={d:trainSel,sets:{}};save();}}else sub[b.dataset.g]=b.dataset.v;render();return;}
+  if(a!=="finish")finArmed=false;
+  if(a==="seg"){if(b.dataset.g==="trainday"){trainSel=b.dataset.v;var cw=S.workouts[k];if(cw&&cw.d!==trainSel){cw.by=cw.by||{};cw.by[cw.d]=cw.sets;cw.sets=cw.by[trainSel]||{};cw.d=trainSel;delete cw.fin;save();}}else sub[b.dataset.g]=b.dataset.v;render();return;}
+  if(a==="swap"){swapOpen=swapOpen===b.dataset.id?null:b.dataset.id;render();return;}
+  if(a==="editw"){editW=true;wErr="";render();return;}
   if(a==="planday"){planDay=b.dataset.k;render();return;}
   if(a==="calsel"){calSel=b.dataset.k;render();return;}
   if(a==="calnav"){var t0=new Date(),m=calMonth||new Date(t0.getFullYear(),t0.getMonth(),1);calMonth=new Date(m.getFullYear(),m.getMonth()+(+b.dataset.d),1);render();return;}
   if(a==="done"){S.done[k]=S.done[k]||{};if(S.done[k][b.dataset.id])delete S.done[k][b.dataset.id];else S.done[k][b.dataset.id]=1;}
-  else if(a==="swap"){var id=b.dataset.id,i=SLOTS.map(function(s){return s.id;}).indexOf(id),cur=(S.swaps[k]&&S.swaps[k][id]!==undefined)?S.swaps[k][id]:WEEK[dow(new Date())][i];
-    var n=(cur+1)%MEALS[id].length;if(MEALS[id][n].free&&dow(new Date())!==5)n=(n+1)%MEALS[id].length;S.swaps[k]=S.swaps[k]||{};S.swaps[k][id]=n;}
+  else if(a==="pick"){S.swaps[k]=S.swaps[k]||{};S.swaps[k][b.dataset.id]=+b.dataset.n;swapOpen=null;}
+  else if(a==="caldone"){var ck=b.dataset.k;S.done[ck]=S.done[ck]||{};if(S.done[ck][b.dataset.id])delete S.done[ck][b.dataset.id];else S.done[ck][b.dataset.id]=1;}
+  else if(a==="caltrain"){if(S.train[b.dataset.k])delete S.train[b.dataset.k];else S.train[b.dataset.k]=1;}
+  else if(a==="calwater"){S.water[b.dataset.k]=((S.water[b.dataset.k]||0)+1)%6;}
   else if(a==="water"){var wn=+b.dataset.n;S.water[k]=(S.water[k]===wn)?wn-1:wn;}
   else if(a==="train"){if(S.train[k])delete S.train[k];else S.train[k]=1;}
   else if(a==="set"){var w=S.workouts[k]||(S.workouts[k]={d:todayWorkout().d,sets:{}}),si=b.dataset.i,sn=+b.dataset.n;w.sets[si]=(w.sets[si]===sn)?sn-1:sn;}
-  else if(a==="finish"){var w2=S.workouts[k]||(S.workouts[k]={d:todayWorkout().d,sets:{}});if(w2.fin){delete w2.fin;delete S.train[k];}else{w2.fin=1;S.train[k]=1;}}
-  else if(a==="logw"){var v=parseFloat(document.getElementById(b.dataset.src).value),dEl=document.getElementById("wd"),dk=dEl&&dEl.value?dEl.value:k;if(!(v>=100&&v<=400))return;S.weights[dk]=Math.round(v*10)/10;}
+  else if(a==="finish"){var w2=S.workouts[k]||(S.workouts[k]={d:todayWorkout().d,sets:{}});if(w2.fin){delete w2.fin;delete S.train[k];}else{var W2=WORKOUTS[w2.d],tt=0,gg=0;W2.ex.forEach(function(x,i){tt+=x.s;gg+=Math.min(x.s,w2.sets[i]||0);});
+      if(gg<tt/2&&!finArmed){finArmed=true;render();return;}finArmed=false;w2.fin=1;S.train[k]=1;}}
+  else if(a==="logw"){var v=parseFloat(document.getElementById(b.dataset.src).value),dEl=document.getElementById("wd"),dk=dEl&&dEl.value?dEl.value:k;if(!(v>=100&&v<=400)){wErr="Enter a weight between 100 and 400 lb.";if(b.dataset.src==="wq")render();else{var le=document.getElementById("wverr");if(le)le.textContent=wErr;}return;}wErr="";editW=false;S.weights[dk]=Math.round(v*10)/10;}
   else if(a==="delw"){delete S.weights[b.dataset.k];}
   else if(a==="adjust"){S.settings.adjust=(+S.settings.adjust||0)+(+b.dataset.delta);}
   else if(a==="shopreset"){S.shop={};}
@@ -563,7 +589,9 @@ document.addEventListener("click",function(e){
   save();render();
 });
 document.addEventListener("change",function(e){
-  var b=e.target;if(!b.dataset||b.dataset.act!=="shop")return;
+  var b=e.target;if(!b.dataset)return;
+  if(b.dataset.act==="lift"){var lv=parseFloat(b.value);if(lv>0)S.lifts[b.dataset.n]=lv;else delete S.lifts[b.dataset.n];save();return;}
+  if(b.dataset.act!=="shop")return;
   if(b.checked)S.shop[b.id]=1;else delete S.shop[b.id];save();render();
 });
 window.addEventListener("hashchange",function(){render();window.scrollTo(0,0);});

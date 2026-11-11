@@ -1,5 +1,5 @@
 // Bump VERSION on every deploy that changes index.html so installed copies refresh their offline cache.
-const VERSION = "cutplan-v1";
+const VERSION = "cutplan-v2";
 const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {

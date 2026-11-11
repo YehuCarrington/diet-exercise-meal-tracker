@@ -54,6 +54,7 @@ For a second layer, put the hostname behind Cloudflare Access (Zero Trust) with 
 
 Edit `public/index.html`, bump `VERSION` in `public/sw.js`, run `npx wrangler deploy`.
 Recipes are in the `MEALS` object, the weekly rotation in `WEEK`, the shopping list in `SHOP`.
+The three training days are in `WORKOUTS`. Screens are the `vToday`, `vPlan`, `vTrain`, `vTrack` and `vMore` functions.
 
 ## Local test
 

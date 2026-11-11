@@ -18,6 +18,27 @@ npx wrangler deploy
 
 Wrangler changes often. If a command or config key is rejected, check the current Workers docs for static assets, KV bindings and custom domains.
 
+## Google sign-in
+
+Each person signs in with Google and gets their own private copy of their data. One-time setup:
+
+1. In Google Cloud Console, create a project, then APIs & Services, OAuth consent screen: choose External, fill in the app name and your email, and publish it (or add your friends as test users).
+2. Credentials, Create credentials, OAuth client ID, type "Web application".
+   - Authorised redirect URI: `https://habitapp.yehu.dev/api/auth/callback`
+3. Store the three secrets:
+
+```sh
+npx wrangler secret put GOOGLE_CLIENT_ID       # from step 2
+npx wrangler secret put GOOGLE_CLIENT_SECRET   # from step 2
+npx wrangler secret put SESSION_SECRET         # any long random string; changing it signs everyone out
+```
+
+Until all three are set the app hides the sign-in button and keeps working on-device. The old `SYNC_KEY` still works under More, Setup, "Use a sync key instead".
+
+Sign in with Apple is not included: it needs a paid Apple Developer account. The Worker is laid out so a second provider can be added beside Google.
+
+Recipe import (`/api/import`) reads the public schema.org Recipe data from a page and only works for signed-in users.
+
 ## Deploy from GitHub
 
 `.github/workflows/deploy.yml` deploys on every push to `main`. One-time setup:

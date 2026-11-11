@@ -1,0 +1,21 @@
+name = "cutplan"
+main = "src/worker.js"
+compatibility_date = "2025-01-01"
+
+# Static app shell. Requests that match a file here are served directly;
+# everything else (the /api/state route) reaches src/worker.js.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+# 1) npx wrangler kv namespace create CUTPLAN
+# 2) paste the id it prints below
+[[kv_namespaces]]
+binding = "CUTPLAN"
+id = "PASTE_KV_NAMESPACE_ID"
+
+# Change to the hostname you want. The zone must already be on your Cloudflare account;
+# Cloudflare creates the DNS record and certificate for you.
+[[routes]]
+pattern = "cut.example.com"
+custom_domain = true

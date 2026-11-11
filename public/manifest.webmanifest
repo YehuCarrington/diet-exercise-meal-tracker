@@ -1,0 +1,16 @@
+{
+  "name": "Cut Plan",
+  "short_name": "Cut Plan",
+  "description": "What to eat and when, with a weight trend that tells you when to change it.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eef2ee",
+  "theme_color": "#0d7355",
+  "icons": [
+    {"src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

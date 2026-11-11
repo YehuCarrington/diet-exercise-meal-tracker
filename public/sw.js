@@ -1,6 +1,6 @@
-// Bump VERSION on every deploy that changes index.html so installed copies refresh their offline cache.
-const VERSION = "cutplan-v8";
-const SHELL = ["/", "/manifest.webmanifest", "/icon-192.png", "/apple-touch-icon.png"];
+// Bump VERSION on every deploy that changes the app files so installed copies refresh their offline cache.
+const VERSION = "cutplan-v9";
+const SHELL = ["/", "/css/app.css", "/js/data.js", "/js/core.js", "/js/app.js", "/manifest.webmanifest", "/icon-192.png", "/apple-touch-icon.png"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

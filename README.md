@@ -61,9 +61,10 @@ Add it to the home screen before logging data. Safari and the home-screen app ke
 ## How sync behaves
 
 - Each device keeps a full local copy, so the app works offline.
-- On open, and whenever the app comes back to the foreground, it fetches the server copy and takes whichever is newer.
-- Every change is pushed about a second after you make it.
-- It is whole-document, newest wins. If you log on two devices while one is offline, the later save replaces the earlier one. The server refuses a push that is older than what it holds, and that device then picks up the newer copy.
+- On open, and whenever the app comes back to the foreground, it fetches the server copy and merges it with the local one.
+- Merging is day by day: each calendar day comes from whichever device changed it last. Setup, own meals, lift history and shop ticks merge as whole blocks, newest wins.
+- Every change is pushed about a second after you make it. If the server holds something newer, the app merges and sends again.
+- "Delete my account and data" under More removes the server copy and the local one.
 - Setup has a Backup box to copy or restore everything by hand.
 
 ## Security
@@ -71,11 +72,32 @@ Add it to the home screen before logging data. Safari and the home-screen app ke
 The sync key is the only thing protecting your data. Anyone with the URL can load the app shell, but the API returns nothing without the key.
 For a second layer, put the hostname behind Cloudflare Access (Zero Trust) with your email as the only allowed user.
 
+## Layout
+
+```
+public/index.html        page shell
+public/css/app.css       styles and colour tokens
+public/js/data.js        plates, weekly rotation, training plans, glossary, shopping table
+public/js/core.js        plan logic: targets, portions, trend, streaks, shopping list, sync merge
+public/js/app.js         storage, sync, screens and actions
+public/sw.js             offline cache
+src/worker.js            API: Google sign-in, per-person data, recipe import
+tests/                   plan-logic and API tests
+```
+
+## Tests
+
+```sh
+npm test
+```
+
+Runs with plain Node 22, no dependencies. The plan logic in `core.js` touches no browser APIs, so the tests load it directly.
+GitHub runs the tests on every push and only deploys if they pass.
+
 ## Updating
 
-Edit `public/index.html`, bump `VERSION` in `public/sw.js`, run `npx wrangler deploy`.
-Recipes are in the `MEALS` object, the weekly rotation in `WEEK`, the shopping list in `SHOP`.
-The three training days are in `WORKOUTS`. Screens are the `vToday`, `vPlan`, `vTrain`, `vTrack` and `vMore` functions.
+Edit the files under `public/`, bump `VERSION` in `public/sw.js`, run `npm test`, then push.
+Recipes are in the `MEALS` object in `data.js`, the weekly rotation in `WEEK`, the training days in `WORKOUTS` and `WORKOUTS_HOME`, and the plate-to-shop conversions in `BUY`.
 
 ## Local test
 

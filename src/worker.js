@@ -4,7 +4,7 @@
 //   /api/auth/callback   Google returns here; sets a signed session cookie
 //   /api/me              who is signed in, and whether sign-in is configured
 //   /api/logout          clear the session
-//   /api/state           one JSON document per person in KV (GET, PUT)
+//   /api/state           one JSON document per person in KV (GET, PUT, DELETE)
 //   /api/import?url=     read the schema.org Recipe data from a recipe page
 //
 // Secrets: GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SESSION_SECRET. Optional legacy SYNC_KEY (bearer key, single shared document).
@@ -146,6 +146,10 @@ async function stateApi(env, request) {
     if (current && current.updated > doc.updated) return json({ error: "stale", updated: current.updated }, 409);
     await env.CUTPLAN.put(key, raw);
     return json({ ok: true, updated: doc.updated });
+  }
+  if (request.method === "DELETE") {
+    await env.CUTPLAN.delete(key);
+    return json({ ok: true });
   }
   return json({ error: "method not allowed" }, 405);
 }

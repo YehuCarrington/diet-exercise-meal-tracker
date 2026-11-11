@@ -82,6 +82,7 @@ button.chip{cursor:pointer;min-height:42px;font:inherit;font-size:14px;color:inh
 .opt{display:flex;justify-content:space-between;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;min-height:46px}
 .opt.on{border-color:var(--accent);background:var(--accent-soft)}
 .err{color:var(--bad);font-size:14px}
+.row.three label.f{flex:1 1 90px}
 .lift{flex:0 0 120px}
 .tag{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--muted)}
 .tag b{color:var(--ink)}
@@ -154,7 +155,7 @@ nav a.on{color:var(--accent);border-top-color:var(--accent)}
 </head>
 <body>
 <div class="wrap" id="app"></div>
-<nav aria-label="Sections"><div id="tabs"></div></nav>
+<nav aria-label="Sections" id="nav"><div id="tabs"></div></nav>
 <script>
 "use strict";
 /* ---------- data ---------- */
@@ -163,17 +164,21 @@ var MEALS={
  b:[
   {n:"Protein oats",how:"Cook oats in water 3 min, stir the powder in off the heat, slice banana on top.",
    it:[I("rolled oats (dry)",.75,"cup",300,10,1),I("lactose-free protein powder",1,"scoop",120,24),I("banana",1,"",105,1),I("peanut butter",1,"tbsp",95,4)]},
-  {n:"Saltfish, cucumber and toast",how:"Boil saltfish the night before. Toss with cucumber, sweet pepper and a little oil. No tomato, no pepper sauce.",
+  {n:"Saltfish, cucumber and toast",x:"fish",how:"Boil saltfish the night before. Toss with cucumber, sweet pepper and a little oil. No tomato, no pepper sauce.",
    it:[I("saltfish, soaked and flaked",120,"g",1.3,.28),I("whole-wheat bread",2,"slice",80,4,1),I("cucumber and sweet pepper",1,"cup",20,1),I("oil",1,"tsp",40,0),I("pawpaw",1,"cup",60,1)]},
-  {n:"Tuna and zaboca sandwich",how:"Mash tuna with zaboca instead of mayo. Two minutes.",
+  {n:"Tuna and zaboca sandwich",x:"fish",how:"Mash tuna with zaboca instead of mayo. Two minutes.",
    it:[I("tuna in water, drained",1,"can",130,28),I("whole-wheat bread",2,"slice",80,4,1),I("mashed zaboca",2,"tbsp",25,0),I("banana",1,"",105,1)]}
 ,
-  {n:"Sardine toast",how:"Sardines packed in water or oil, not tomato sauce. Drain, mash with chadon beni, pile on toast with cucumber.",
+  {n:"Sardine toast",x:"fish",how:"Sardines packed in water or oil, not tomato sauce. Drain, mash with chadon beni, pile on toast with cucumber.",
    it:[I("sardines, drained",1,"can",190,22),I("whole-wheat bread",2,"slice",80,4,1),I("cucumber",1,"cup",20,1),I("pawpaw",1,"cup",60,1)]},
   {n:"Peanut-banana blender shake",how:"Everything in the blender with ice, 60 seconds. Drink it on the way to work.",
    it:[I("lactose-free protein powder",1,"scoop",120,24),I("unsweetened soy milk",1,"cup",80,7),I("rolled oats (dry)",.5,"cup",300,10,1),I("banana",1,"",105,1),I("peanut butter",1,"tbsp",95,4)]},
   {n:"Chicken and sweet potato hash",how:"Dice leftover baked chicken and boiled sweet potato. Fry 5 min in 1 tsp oil with sweet pepper and pimento.",
-   it:[I("baked chicken breast",120,"g",1.65,.31),I("boiled sweet potato",1,"cup",190,2,1),I("sweet pepper and pimento",.5,"cup",30,1),I("oil",1,"tsp",40,0)]}
+   it:[I("baked chicken breast",120,"g",1.65,.31),I("boiled sweet potato",1,"cup",190,2,1),I("sweet pepper and pimento",.5,"cup",30,1),I("oil",1,"tsp",40,0)]},
+  {n:"Scrambled eggs on toast",x:"egg",how:"Scramble over low heat in 1 tsp oil. Two minutes.",
+   it:[I("eggs",3,"",72,6),I("whole-wheat bread",2,"slice",80,4,1),I("oil",1,"tsp",40,0),I("pawpaw",1,"cup",60,1)]},
+  {n:"Yogurt, oats and banana",x:"dairy",how:"Stir dry oats into the yogurt, slice the banana on top. No cooking.",
+   it:[I("plain low-fat Greek yogurt",1,"cup",150,23),I("rolled oats (dry)",.5,"cup",300,10,1),I("banana",1,"",105,1),I("peanut butter",1,"tbsp",95,4)]}
  ],
  l:[
   {n:"Baked chicken, rice and dhal",how:"From Sunday's batch. Reheat, add the veg.",
@@ -187,17 +192,17 @@ var MEALS={
   {n:"Lean pelau",how:"Skinless chicken, pigeon peas, light on browning sugar, no coconut milk.",
    it:[I("lean chicken pelau",1.5,"cup",280,18,1),I("extra chicken",80,"g",1.65,.31),I("cucumber and cabbage slaw, no mayo",1,"cup",40,1)]}
 ,
-  {n:"No-cook tuna and channa bowl",how:"Rinse canned channa, toss with tuna, cucumber, carrot, chadon beni and salt. Nothing to heat.",
+  {n:"No-cook tuna and channa bowl",x:"fish",how:"Rinse canned channa, toss with tuna, cucumber, carrot, chadon beni and salt. Nothing to heat.",
    it:[I("tuna in water, drained",1,"can",130,28),I("channa, rinsed",.75,"cup",270,14),I("cooked rice",.75,"cup",205,4,1),I("cucumber and grated carrot",1,"cup",30,1),I("diced zaboca",2,"tbsp",25,0)]},
   {n:"Light stew chicken with pigeon peas",how:"Brown 1 tsp sugar only, skin off, stew 25 min with pimento and thyme. Batch it on Sunday instead of the baked chicken.",
    it:[I("stewed skinless chicken thigh",150,"g",1.8,.25),I("pigeon peas",.5,"cup",200,11),I("cooked rice",1,"cup",205,4,1),I("steamed cabbage and carrot",1,"cup",70,3)]},
-  {n:"Fish broth",how:"Simmer green fig, dasheen, carrot and okra 15 min with thyme and chadon beni, add the fish for the last 6. Leave out the lime and pepper.",
+  {n:"Fish broth",x:"fish",how:"Simmer green fig, dasheen, carrot and okra 15 min with thyme and chadon beni, add the fish for the last 6. Leave out the lime and pepper.",
    it:[I("carite or kingfish",170,"g",1.35,.26),I("green fig and dasheen",1.25,"cup",180,2,1),I("carrot and okra",1,"cup",50,2)]}
  ],
  s:[
   {n:"Shake and a banana",how:"Powder in water. Keep a shaker at your desk.",
    it:[I("lactose-free protein powder",1,"scoop",120,24),I("banana",1,"",105,1)]},
-  {n:"Tuna and crackers",how:"Keep cans in your desk drawer.",
+  {n:"Tuna and crackers",x:"fish",how:"Keep cans in your desk drawer.",
    it:[I("tuna in water, drained",1,"can",130,28),I("whole-wheat crackers",4,"",17.5,.5,1),I("cucumber",.5,"cup",10,0)]},
   {n:"Peanuts and fruit",how:"Weigh the peanuts once so you know what 30 g looks like.",
    it:[I("unsalted roasted peanuts",30,"g",5.7,.24),I("banana, or a cup of pawpaw or melon",1,"",105,1)]}
@@ -205,10 +210,14 @@ var MEALS={
   {n:"Chicken strips and carrot sticks",how:"Slice a piece of the batch chicken. Eat it cold.",
    it:[I("baked chicken breast",80,"g",1.65,.31),I("whole-wheat crackers",4,"",17.5,.5,1),I("carrot sticks",1,"cup",50,1)]},
   {n:"Salted channa and cucumber",how:"Rinsed canned channa, cucumber, chadon beni, salt. Lowest protein option, so use it once a week.",
-   it:[I("channa, rinsed",.75,"cup",270,14),I("cucumber",1,"cup",20,1)]}
+   it:[I("channa, rinsed",.75,"cup",270,14),I("cucumber",1,"cup",20,1)]},
+  {n:"Two boiled eggs and fruit",x:"egg",how:"Boil six on Sunday and keep them in the fridge.",
+   it:[I("boiled eggs",2,"",72,6),I("banana",1,"",105,1)]},
+  {n:"Greek yogurt and peanuts",x:"dairy",how:"Plain yogurt, not flavoured.",
+   it:[I("plain low-fat Greek yogurt",1,"cup",150,23),I("unsalted roasted peanuts",15,"g",5.7,.24)]}
  ],
  d:[
-  {n:"Seared fish, provision and bodi",how:"Carite or kingfish, 4 min a side in 1 tsp oil. Green seasoning, no lime if it burns you.",
+  {n:"Seared fish, provision and bodi",x:"fish",how:"Carite or kingfish, 4 min a side in 1 tsp oil. Green seasoning, no lime if it burns you.",
    it:[I("carite or kingfish",170,"g",1.35,.26),I("boiled provision",1.25,"cup",190,2,1),I("bodi and pumpkin",1.5,"cup",70,3),I("oil",1,"tsp",40,0)]},
   {n:"Chicken and veg stir-fry",how:"Ginger, garlic, pak choi, carrot, cabbage. 15 minutes.",
    it:[I("chicken breast",150,"g",1.65,.31),I("stir-fried veg",2,"cup",70,3),I("cooked rice",1,"cup",205,4,1)]},
@@ -217,7 +226,7 @@ var MEALS={
   {n:"Baked chicken, okra and sweet potato",how:"Tray bake, 25 min at 200°C.",
    it:[I("skinless chicken thigh",150,"g",1.8,.25),I("sweet potato",1.25,"cup",190,2,1),I("okra and pumpkin",1.5,"cup",70,3)]}
 ,
-  {n:"Foil-baked fish with okra and pumpkin",how:"Fish, okra, pumpkin, garlic and green seasoning in one foil parcel. 20 min at 200°C, no pan to wash.",
+  {n:"Foil-baked fish with okra and pumpkin",x:"fish",how:"Fish, okra, pumpkin, garlic and green seasoning in one foil parcel. 20 min at 200°C, no pan to wash.",
    it:[I("carite or kingfish",170,"g",1.35,.26),I("okra and pumpkin",1.5,"cup",70,3),I("cooked rice",1,"cup",205,4,1)]},
   {n:"Geera chicken, rice and cucumber",how:"Toast 1 tsp geera in a dry pan, add diced thigh, garlic and 1 tsp oil, cook 12 min. Keep it mild.",
    it:[I("skinless chicken thigh",150,"g",1.8,.25),I("cooked rice",1,"cup",205,4,1),I("cucumber salad",1,"cup",20,1),I("oil",1,"tsp",40,0)]},
@@ -233,7 +242,7 @@ var SLOTS=[
  {id:"b",label:"Breakfast",why:"Protein early is what stops the mid-morning pastry and sweet drink."},
  {id:"l",label:"Lunch",why:"Packed from home, so the food court does not decide for you."},
  {id:"s",label:"Afternoon snack",why:"This replaces the 3 pm candy bar. Eat it even if you are not hungry yet."},
- {id:"d",label:"Dinner",why:"Last food of the day. A gap before bed keeps reflux down and ends the evening snacking."}
+ {id:"d",label:"Dinner",why:"Last food of the day. A gap before bed helps you sleep and ends the evening snacking."}
 ];
 var DAYS=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
 var SHOP=[
@@ -243,25 +252,27 @@ var SHOP=[
  ["Fruit and extras",["Bananas, 10","Pawpaw, 1","Zaboca, 1","Peanut butter","Unsalted peanuts, 100 g","Ginger, garlic, chadon beni for green seasoning"]]
 ];
 var SCIENCE=[
- {h:"Fat loss is an energy gap",b:"Your body burns roughly {tdee} kcal a day at your size and activity (Mifflin-St Jeor estimate for resting burn, times 1.4 for a desk job plus three gym sessions). The plan feeds you about {target}. A gap near 500 kcal a day works out to roughly 1 lb a week at first, then slows as you get lighter. No food, timing trick or supplement works except by changing that gap."},
+ {h:"Fat loss is an energy gap",b:"Your body burns roughly {tdee} kcal a day at your size and activity (Mifflin-St Jeor estimate for resting burn, times a factor for how active you are). The plan feeds you about {target}. A gap near 500 kcal a day works out to roughly 1 lb a week at first, then slows as you get lighter. No food, timing trick or supplement works except by changing that gap."},
  {h:"Why the plan is built on protein",b:"When you eat less, you lose muscle along with fat unless protein stays high. Pooled trials in overweight adults find that going above about 1.3 g per kg of body weight a day protects muscle, and that dropping under 1.0 g per kg raises the risk of losing it. Reviews also point to roughly 25 to 30 g at each meal for better appetite control. Your floor is {protein} g a day, split over four sittings.",
   src:[["Enhanced protein intake in adults with overweight (meta-analysis, 2024)","https://pubmed.ncbi.nlm.nih.gov/39002131/"],["The role of protein in weight loss and maintenance (2015)","https://pubmed.ncbi.nlm.nih.gov/25926512/"]]},
  {h:"Why packaged and fried food is out by default",b:"In a month-long NIH feeding trial, 20 adults were given either ultra-processed or minimally processed meals matched for calories on offer, and told to eat as much as they wanted. They ate about 500 kcal a day more on the ultra-processed menu and gained weight, then lost it on the whole-food menu. Nobody felt they were overeating. Pies, sweet drinks and candy bars work on you the same way.",
   src:[["NIH: heavily processed foods cause overeating and weight gain","https://www.nih.gov/news-events/news-releases/nih-study-finds-heavily-processed-foods-cause-overeating-weight-gain"]]},
- {h:"Why set times",b:"Meal timing does not burn fat by itself. Fixed times matter because of what happens without them: a skipped breakfast turns into a fried pastry at 10, a crash after lunch turns into a candy bar, and a light dinner turns into snacking at night. Four planned plates remove those decisions. The kitchen closing 3 hours before bed is for your reflux as much as for the calories."},
+ {h:"Why set times",b:"Meal timing does not burn fat by itself. Fixed times matter because of what happens without them: a skipped breakfast turns into a fried pastry at 10, a crash after lunch turns into a candy bar, and a light dinner turns into snacking at night. Four planned plates remove those decisions. The kitchen closes 3 hours before bed to end night snacking.{reflux}"},
  {h:"Why weigh every day",b:"Your weight swings 2 to 4 lb from water, salt and food in transit, so a single reading tells you nothing. Weigh each morning after the bathroom, before eating, and read only the 7-day average. The Track tab does this for you and tells you when to change the food."},
  {h:"Why earlier attempts did not work",b:"The usual cause is not effort. People consistently eat more than they believe they do, and the extra comes from drinks, oil, bites while cooking and weekend meals. This plan does not ask you to count anything. It asks you to eat the listed plates and nothing else, then lets the scale trend check the maths."},
- {h:"Keep lifting",b:"Your three gym days tell your body to keep muscle while the deficit takes fat. Belly fat tends to respond early to a steady deficit plus training. Do not add hours of cardio to make up for off-plan eating."}
+ {h:"Keep lifting",b:"Strength training tells your body to keep muscle while the deficit takes fat. Belly fat tends to respond early to a steady deficit plus training. Do not add hours of cardio to make up for off-plan eating."}
 ];
 
 /* ---------- state ---------- */
 var KEY="cutplan-v1";
-var DEF={v:1,updated:0,settings:{start:207,goal:180,height:70,age:30,wake:"06:00",bed:"22:30",adjust:0},weights:{},done:{},swaps:{},train:{},shop:{},workouts:{},water:{},lifts:{}};
+var DEF={v:1,updated:0,settings:{start:"",goal:"",height:"",age:"",wake:"06:00",bed:"22:30",adjust:0,onboarded:false,sex:"m",act:1.4,noDairy:false,noEggs:false,noFish:false,reflux:false},weights:{},done:{},swaps:{},train:{},shop:{},workouts:{},water:{},lifts:{}};
 var S=JSON.parse(JSON.stringify(DEF));
 try{var raw=localStorage.getItem(KEY);if(raw){S=merge(JSON.parse(raw));}}catch(e){}
 function merge(o){var b=JSON.parse(JSON.stringify(DEF));if(!o||typeof o!=="object")return b;
   ["weights","done","swaps","train","shop","workouts","water","lifts"].forEach(function(k){if(o[k]&&typeof o[k]==="object")b[k]=o[k];});
   if(o.settings)for(var k in b.settings)if(o.settings[k]!==undefined)b.settings[k]=o.settings[k];
+  /* data saved before onboarding existed belongs to the original user: keep that plan as it was */
+  if(o.settings&&o.settings.onboarded===undefined&&o.settings.start){b.settings.onboarded=true;b.settings.noDairy=true;b.settings.noEggs=true;b.settings.reflux=true;}
   b.updated=o.updated||0;return b;}
 var syncState="device",saveTimer=null,writing=Promise.resolve();
 function save(){
@@ -309,13 +320,16 @@ function qty(it,q){
   var n=frac(q),pl=q>1&&/^(cup|slice|scoop|can)$/.test(it.u)?"s":"";
   return n+(it.u?" "+it.u+pl:"")+" "+it.t;
 }
+function banned(m){var s=S.settings;return (m.x==="egg"&&s.noEggs)||(m.x==="dairy"&&s.noDairy)||(m.x==="fish"&&s.noFish);}
+function allowedIdx(slot,idx){var l=MEALS[slot];for(var i=0;i<l.length;i++){var j=(idx+i)%l.length;if(!banned(l[j])&&!(i>0&&l[j].free))return j;}return idx;}
+function minGoal(heightIn){return 18.5*Math.pow(heightIn*.0254,2)*2.2046;}
 function avg(a){return a.reduce(function(x,y){return x+y;},0)/a.length;}
 function windowAvg(endOffset,len){var v=[],t=new Date();for(var i=endOffset;i<endOffset+len;i++){var w=S.weights[key(addDays(t,-i))];if(w)v.push(w);}return v.length>=3?avg(v):null;}
 function currentWeight(){var a=windowAvg(0,7);if(a)return a;var ks=Object.keys(S.weights).sort();return ks.length?S.weights[ks[ks.length-1]]:+S.settings.start;}
 function targets(){
   var s=S.settings,kg=currentWeight()/2.2046,cm=s.height*2.54;
-  var bmr=10*kg+6.25*cm-5*s.age+5,tdee=bmr*1.4;
-  var target=Math.max(1700,Math.round((tdee-500+(+s.adjust||0))/10)*10);
+  var bmr=10*kg+6.25*cm-5*s.age+(s.sex==="f"?-161:5),tdee=bmr*(+s.act||1.4);
+  var target=Math.max(s.sex==="f"?1400:1700,Math.round((tdee-500+(+s.adjust||0))/10)*10);
   return {bmr:Math.round(bmr),tdee:Math.round(tdee/10)*10,target:target,protein:Math.round(1.5*kg/5)*5};
 }
 function times(){var w=mins(S.settings.wake),b=mins(S.settings.bed);if(b<=w)b+=1440;
@@ -323,12 +337,15 @@ function times(){var w=mins(S.settings.wake),b=mins(S.settings.bed);if(b<=w)b+=1
   return {b:Math.min(w+45,l-150),l:l,s:sn,d:d,close:b-180};}
 function dayPlan(date){
   var k=key(date),base=WEEK[dow(date)],sw=S.swaps[k]||{},T=targets(),picks=[],fixed=0,carb=0;
-  SLOTS.forEach(function(sl,i){var list=MEALS[sl.id],idx=sw[sl.id]!==undefined?sw[sl.id]:base[i];var m=list[idx%list.length];picks.push(m);
+  SLOTS.forEach(function(sl,i){var list=MEALS[sl.id],idx=sw[sl.id]!==undefined?sw[sl.id]:base[i];var m=list[allowedIdx(sl.id,idx%list.length)];picks.push(m);
     m.it.forEach(function(it){if(it.c)carb+=it.q*it.k;else fixed+=it.q*it.k;});});
   var extra=S.train[k]?105:0;
-  var f=carb?Math.max(.6,Math.min(1.6,(T.target-fixed)/carb)):1,tk=0,tp=0;
+  var fr=carb?(T.target-fixed)/carb:1,f=Math.max(.6,Math.min(2,fr)),g=1,tk=0,tp=0;
+  /* when starch alone cannot reach the target (small or large eaters), scale the rest of the plate too */
+  if(fixed&&(fr<.6||fr>2))g=Math.max(.6,Math.min(1.6,(T.target-f*carb)/fixed));
   var meals=picks.map(function(m,i){var k2=0,p=0;var items=m.it.map(function(it){
       var q=it.q;if(it.c){q=it.u==="g"?it.q*f:Math.max(.25,Math.round(it.q*f*4)/4);if(it.u===""||it.u==="slice")q=Math.max(1,Math.round(it.q*f));}
+      else if(g!==1&&!m.free){if(it.u==="g")q=it.q*g;else if(it.u==="cup")q=Math.max(.25,Math.round(it.q*g*4)/4);}
       k2+=q*it.k;p+=q*it.p;return {x:qty(it,q),i:icon(it.t)};});
     if(S.train[k]&&SLOTS[i].id==="s"){items.push({x:"1 extra banana, 60 to 90 min before training",i:"🍌"});k2+=105;p+=1;}
     tk+=k2;tp+=p;return {slot:SLOTS[i],meal:m,items:items,kcal:Math.round(k2/10)*10,prot:Math.round(p)};});
@@ -337,7 +354,7 @@ function dayPlan(date){
 function adherence(n){var t=new Date(),got=0,tot=0;for(var i=1;i<=n;i++){var d=S.done[key(addDays(t,-i))];if(d!==undefined||i<=n){tot+=4;if(d)got+=Object.keys(d).length;}}return tot?got/tot:0;}
 function daysUsed(){var ks=Object.keys(S.done).concat(Object.keys(S.weights)).sort();if(!ks.length)return 0;return Math.round((new Date()-parseKey(ks[0]))/864e5);}
 
-var ICONS=[["choice","🍽️"],["pelau","🍚"],["chicken","🍗"],["tuna","🐟"],["sardine","🐟"],["saltfish","🐟"],["carite","🐟"],["kingfish","🐟"],["oats","🥣"],["powder","🥤"],["soy milk","🥛"],["peanut","🥜"],["banana","🍌"],["bread","🍞"],["cracker","🍘"],["zaboca","🥑"],["pawpaw","🍈"],["rice","🍚"],["dhal","🫘"],["lentil","🫘"],["channa","🫘"],["pigeon","🫘"],["sweet potato","🍠"],["provision","🍠"],["dasheen","🍠"],["green fig","🍠"],["sweet pepper","🫑"],["cucumber","🥒"],["carrot","🥕"],["ginger","🌿"],["oil","🫒"],["pumpkin","🎃"]];
+var ICONS=[["choice","🍽️"],["pelau","🍚"],["chicken","🍗"],["tuna","🐟"],["sardine","🐟"],["saltfish","🐟"],["carite","🐟"],["kingfish","🐟"],["egg","🥚"],["yogurt","🥛"],["oats","🥣"],["powder","🥤"],["soy milk","🥛"],["peanut","🥜"],["banana","🍌"],["bread","🍞"],["cracker","🍘"],["zaboca","🥑"],["pawpaw","🍈"],["rice","🍚"],["dhal","🫘"],["lentil","🫘"],["channa","🫘"],["pigeon","🫘"],["sweet potato","🍠"],["provision","🍠"],["dasheen","🍠"],["green fig","🍠"],["sweet pepper","🫑"],["cucumber","🥒"],["carrot","🥕"],["ginger","🌿"],["oil","🫒"],["pumpkin","🎃"]];
 function icon(t){t=String(t).toLowerCase();for(var i=0;i<ICONS.length;i++)if(t.indexOf(ICONS[i][0])>=0)return ICONS[i][1];return "🥬";}
 function trend(){
   var a1=windowAvg(0,7),a0=windowAvg(7,7),ad=adherence(Math.min(14,Math.max(1,daysUsed())));
@@ -426,6 +443,9 @@ var TABS=[["today","Today"],["plan","Plan"],["train","Train"],["track","Track"],
 var sub={plan:"week",track:"calendar",more:"setup"},planDay=null,trainSel=null,calMonth=null,calSel=null,resetArmed=false,swapOpen=null,editW=false,wErr="",finArmed=false;
 function route(){var h=(location.hash||"").replace("#","");return TABS.some(function(t){return t[0]===h;})?h:"today";}
 function render(){
+  var nv=document.getElementById("nav");
+  if(!S.settings.onboarded){if(!wiz)wizInit();if(nv&&nv.style)nv.style.display="none";document.getElementById("app").innerHTML=vWizard();return;}
+  if(nv&&nv.style)nv.style.display="";
   var r=route();
   document.getElementById("tabs").innerHTML=TABS.map(function(t){return '<a href="#'+t[0]+'"'+(t[0]===r?' class="on" aria-current="page"':'')+'><svg viewBox="0 0 24 24" aria-hidden="true">'+NAV[t[0]]+'</svg>'+t[1]+'</a>';}).join("");
   document.getElementById("app").innerHTML=({today:vToday,plan:vPlan,train:vTrain,track:vTrack,more:vMore})[r]();
@@ -451,8 +471,8 @@ function vToday(){
     h+='<div class="row"><span class="tag">🔥 <b>'+m.kcal+'</b> kcal</span><span class="tag">💪 <b>'+m.prot+' g</b> protein</span></div>';
     h+='<p class="small">'+esc(m.meal.how)+'</p><details><summary>Why this plate</summary><p>'+esc(m.slot.why)+'</p></details>';
     h+='<div class="row"><button class="btn big '+(isDone?"":"primary")+'" data-act="done" data-id="'+id+'">'+(isDone?"Undo":"✓ Eaten")+'</button><button class="btn" data-act="swap" data-id="'+id+'" aria-expanded="'+(swapOpen===id)+'">⟳ Swap</button></div>';
-    if(swapOpen===id){var curIdx=(S.swaps[P.key]&&S.swaps[P.key][id]!==undefined)?S.swaps[P.key][id]:WEEK[dow(now)][SLOTS.indexOf(m.slot)];
-      h+='<div class="opts">'+MEALS[id].map(function(o,oi){if(o.free&&dow(now)!==5)return "";var mt=mealTotals(o);return '<button class="opt'+(oi===curIdx?" on":"")+'" data-act="pick" data-id="'+id+'" data-n="'+oi+'"><span>'+esc(o.n)+'</span><span class="tag">'+mt.k+' kcal · '+mt.p+' g</span></button>';}).join("")+'</div>';}
+    if(swapOpen===id){var curIdx=(S.swaps[P.key]&&S.swaps[P.key][id]!==undefined)?S.swaps[P.key][id]:allowedIdx(id,WEEK[dow(now)][SLOTS.indexOf(m.slot)]);
+      h+='<div class="opts">'+MEALS[id].map(function(o,oi){if((o.free&&dow(now)!==5)||banned(o))return "";var mt=mealTotals(o);return '<button class="opt'+(oi===curIdx?" on":"")+'" data-act="pick" data-id="'+id+'" data-n="'+oi+'"><span>'+esc(o.n)+'</span><span class="tag">'+mt.k+' kcal · '+mt.p+' g</span></button>';}).join("")+'</div>';}
     h+='</section>';
   });
   h+='<div class="note"><span class="e" aria-hidden="true">🔒</span><span><b>Kitchen closes '+clock(tm.close)+'.</b> Water or unsweetened tea after that.</span></div>';
@@ -475,14 +495,14 @@ function vPlan(){
     h+='<div class="card"><div class="row spread"><h2>Sunday cook-up</h2><span class="pill">75 min</span></div><ol class="steps"><li><span class="e">🍗</span><span>Green-season 1.2 kg breast and 800 g thighs. Bake at 200°C: breast 22 min, thighs 30.</span></li><li><span class="e">🍚</span><span>Meanwhile: a pot of rice, a pot of dhal, a pot of lentils with pumpkin.</span></li><li><span class="e">🍠</span><span>Boil 2 kg provision, drain, cool.</span></li><li><span class="e">📦</span><span>Box 5 lunches. Fridge Mon to Wed, freeze Thu and Fri.</span></li><li><span class="e">🐟</span><span>Boil the saltfish for two breakfasts.</span></li></ol></div>';
     h+='<div class="card"><div class="row spread"><h2>Wednesday top-up</h2><span class="pill">20 min</span></div><ol class="steps"><li><span class="e">🐟</span><span>Buy fresh fish for tonight and Friday.</span></li><li><span class="e">🍲</span><span>Make the soup pot for Wednesday and Sunday.</span></li></ol></div>';
   }else if(sub.plan==="shop"){
-    var tot=0,got=0;SHOP.forEach(function(g,gi){g[1].forEach(function(_,i){tot++;if(S.shop["s"+gi+"_"+i])got++;});});
+    var tot=0,got=0;var hide=function(it){return S.settings.noFish&&icon(it)==="🐟";};SHOP.forEach(function(g,gi){g[1].forEach(function(it,i){if(hide(it))return;tot++;if(S.shop["s"+gi+"_"+i])got++;});});
     h+='<div class="card">'+meter("In the trolley",got,tot,"items")+'</div>';
-    SHOP.forEach(function(g,gi){h+='<div class="card"><h3>'+g[0]+'</h3><div>'+g[1].map(function(it,i){var id="s"+gi+"_"+i,on=!!S.shop[id];return '<label class="chk'+(on?" on":"")+'" for="'+id+'"><input type="checkbox" id="'+id+'" data-act="shop"'+(on?" checked":"")+'><span class="e" aria-hidden="true">'+icon(it)+'</span><span class="t">'+esc(it)+'</span></label>';}).join("")+'</div></div>';});
+    SHOP.forEach(function(g,gi){h+='<div class="card"><h3>'+g[0]+'</h3><div>'+g[1].map(function(it,i){if(hide(it))return "";var id="s"+gi+"_"+i,on=!!S.shop[id];return '<label class="chk'+(on?" on":"")+'" for="'+id+'"><input type="checkbox" id="'+id+'" data-act="shop"'+(on?" checked":"")+'><span class="e" aria-hidden="true">'+icon(it)+'</span><span class="t">'+esc(it)+'</span></label>';}).join("")+'</div></div>';});
     h+='<button class="btn" data-act="shopreset">Untick all for next week</button>';
-    h+='<div class="tiles"><div class="tile"><span class="e">🥤</span>No soft drinks or juice</div><div class="tile"><span class="e">🍪</span>No biscuits or chips</div><div class="tile"><span class="e">🌭</span>No sausages or noodles</div><div class="tile"><span class="e">🥛</span>No milk or yogurt</div></div>';
+    h+='<div class="tiles"><div class="tile"><span class="e">🥤</span>No soft drinks or juice</div><div class="tile"><span class="e">🍪</span>No biscuits or chips</div><div class="tile"><span class="e">🌭</span>No sausages or noodles</div>'+(S.settings.noDairy?'<div class="tile"><span class="e">🥛</span>No milk or yogurt</div>':'<div class="tile"><span class="e">🍦</span>No ice cream or sweet yogurt</div>')+'</div>';
   }else{
     h+='<p class="small muted">These are base portions. Today adjusts the rice, bread and provision to hit your daily target, so amounts there can differ. Tap Swap on a plate to choose any of these.</p>';
-    SLOTS.forEach(function(sl){h+='<div class="card"><div class="row"><span class="slotic" aria-hidden="true">'+SLOTE[sl.id]+'</span><h2>'+sl.label+'</h2></div>'+MEALS[sl.id].map(function(m){var k=0,p=0;m.it.forEach(function(it){k+=it.q*it.k;p+=it.q*it.p;});
+    SLOTS.forEach(function(sl){h+='<div class="card"><div class="row"><span class="slotic" aria-hidden="true">'+SLOTE[sl.id]+'</span><h2>'+sl.label+'</h2></div>'+MEALS[sl.id].filter(function(m){return !banned(m);}).map(function(m){var k=0,p=0;m.it.forEach(function(it){k+=it.q*it.k;p+=it.q*it.p;});
       return '<details><summary><span>'+esc(m.n)+'<br><span class="tag">'+Math.round(k/10)*10+' kcal · '+Math.round(p)+' g protein</span></span></summary>'+chips(m.it.map(function(it){return {x:qty(it,it.q),i:icon(it.t)};}))+'<p>'+esc(m.how)+'</p></details>';}).join("")+'</div>';});
   }
   return h;
@@ -540,17 +560,49 @@ function vMore(){
   var h='<header><h1>More</h1></header>'+seg("more",[["setup","Setup"],["why","Why it works"]],sub.more),T=targets(),s=S.settings;
   if(sub.more==="why"){
     var em=["⚖️","🍗","📦","⏰","📈","🔍","🏋️"];
-    SCIENCE.forEach(function(c,i){var b=c.b.replace("{tdee}",T.tdee).replace("{target}",T.target).replace("{protein}",T.protein);
+    SCIENCE.forEach(function(c,i){var b=c.b.replace("{tdee}",T.tdee).replace("{target}",T.target).replace("{protein}",T.protein).replace("{reflux}",S.settings.reflux?" The gap also keeps reflux down overnight.":"");
       h+='<div class="card"><div class="row" style="flex-wrap:nowrap"><span class="slotic" aria-hidden="true">'+em[i]+'</span><h2>'+esc(c.h)+'</h2></div><p class="small">'+esc(b)+'</p>'+(c.src?'<p class="small">'+c.src.map(function(x){return '<a href="'+x[1]+'" target="_blank" rel="noopener">'+esc(x[0])+'</a>';}).join("<br>")+'</p>':"")+'</div>';});
-    h+='<p class="small muted">Plate figures are estimates from standard food tables. Your scale trend is the real check. Talk to your doctor before changing reflux medication or if weight stalls for six weeks on a fully followed plan.</p>';
+    h+='<p class="small muted">Plate figures are estimates from standard food tables. Your scale trend is the real check. Talk to your doctor before starting if you have a medical condition or take regular medication, and if weight stalls for six weeks on a fully followed plan.</p>';
     return h;
   }
   h+='<div class="tiles three"><div class="tile"><span class="e">🔥</span><b>'+T.tdee+'</b>kcal you burn</div><div class="tile"><span class="e">🍽️</span><b>'+T.target+'</b>kcal on the plan</div><div class="tile"><span class="e">💪</span><b>'+T.protein+' g</b>protein floor</div></div>';
-  h+='<div class="card"><div class="row">'+fld("start","Starting weight, lb","number",s.start)+fld("goal","Goal weight, lb","number",s.goal)+fld("height","Height, inches","number",s.height)+fld("age","Age","number",s.age)+fld("wake","Wake-up time","time",s.wake)+fld("bed","Bedtime","time",s.bed)+'</div><button class="btn primary" data-act="saveset">Save</button><p class="small muted" id="setmsg">'+(s.adjust?"Target includes "+(s.adjust>0?"+":"")+s.adjust+" kcal from your trend.":"")+'</p></div>';
-  h+='<div class="tiles"><div class="tile"><span class="e">🥛</span>No milk or yogurt</div><div class="tile"><span class="e">🥚</span>No eggs</div><div class="tile"><span class="e">🌶️</span>No pepper, tomato or citrus</div><div class="tile"><span class="e">⏲️</span>Under 30 min to cook</div></div>';
+  h+='<div class="card"><div class="row">'+fld("start","Starting weight, lb","number",s.start)+fld("goal","Goal weight, lb","number",s.goal)+fld("height","Height, inches","number",s.height)+fld("age","Age","number",s.age)+fld("wake","Wake-up time","time",s.wake)+fld("bed","Bedtime","time",s.bed)+'</div>'+seg("sex",[["m","Male"],["f","Female"]],s.sex)+seg("act",[["1.3","Mostly sitting"],["1.4","Some exercise"],["1.55","Very active"]],String(s.act))+'<button class="btn primary" data-act="saveset">Save</button><p class="small muted" id="setmsg">'+(s.adjust?"Target includes "+(s.adjust>0?"+":"")+s.adjust+" kcal from your trend.":"")+'</p></div>';
+  h+='<div class="card"><h3>Foods to leave out</h3>'+FLAGS.map(function(f){return flagBtn(f,!!s[f[0]],"flag");}).join("")+'</div>';
   h+='<div class="card"><h3>Sync between devices</h3><p class="small muted">Same key on every device. Status: '+syncText()+'.</p><div class="row"><label class="f" for="f_key">Sync key<input id="f_key" type="password" autocomplete="off" value="'+esc(syncKey)+'"></label><button class="btn primary" data-act="savekey">Connect</button></div></div>';
   h+='<div class="card"><h3>Backup</h3><textarea id="bk" aria-label="Backup data">'+esc(JSON.stringify(S))+'</textarea><div class="row"><button class="btn" data-act="copyb">Copy backup</button><button class="btn" data-act="importb">Load pasted backup</button></div><p class="small muted" id="bkmsg"></p></div>';
+  h+='<button class="btn" data-act="rewiz">Run the setup questions again</button>';
   h+='<button class="btn danger" data-act="reset">Erase all my logged data</button>';
+  return h;
+}
+var FLAGS=[["noDairy","🥛","No milk or yogurt","Lactose intolerant or avoiding dairy"],["noEggs","🥚","No eggs","Allergy or just do not like them"],["noFish","🐟","No fish","Removes fish, tuna and saltfish plates"],["reflux","🔥","Reflux friendly","Heartburn or GERD: keeps plates mild and low fat"]];
+function flagBtn(f,on,act){return '<button class="toggle'+(on?" on":"")+'" data-act="'+act+'" data-f="'+f[0]+'" aria-pressed="'+on+'" style="margin-top:8px"><span class="slotic" aria-hidden="true">'+f[1]+'</span><span><b>'+f[2]+'</b><br><span class="small muted">'+f[3]+'</span></span><span style="margin-left:auto;font-weight:700">'+(on?"✓":"")+'</span></button>';}
+
+/* ---------- first-run setup ---------- */
+var wiz=null;
+function wizInit(){var s=S.settings;wiz={step:1,err:"",sex:s.sex||"m",age:s.age||"",ft:s.height?Math.floor(s.height/12):"",inch:s.height?Math.round(s.height%12):"",start:s.start||"",goal:s.goal||"",wake:s.wake||"06:00",bed:s.bed||"22:30",act:+s.act||1.4,noDairy:!!s.noDairy,noEggs:!!s.noEggs,noFish:!!s.noFish,reflux:!!s.reflux};}
+function wizRead(){["age","ft","inch","start","goal","wake","bed"].forEach(function(f){var el=document.getElementById("w_"+f);if(el&&el.tagName)wiz[f]=el.value;});}
+function wizCheck(){
+  var age=+wiz.age,h=(+wiz.ft)*12+(+wiz.inch||0),st=+wiz.start,g=+wiz.goal;
+  if(!(age>0)||!(+wiz.ft>0)||!(st>0)||!(g>0))return "Fill in every box to continue.";
+  if(age<18)return "This plan is built for adults aged 18 and over.";
+  if(age>90||h<54||h>90||st<90||st>500)return "Check those numbers. One of them looks off.";
+  if(g>=st)return "This plan is for losing weight, so the goal needs to be below your current weight.";
+  var mg=minGoal(h);if(g<mg)return "That goal is below a healthy weight for your height. Choose "+Math.ceil(mg)+" lb or more.";
+  return "";
+}
+function wf(id,label,type,val,extra){return '<label class="f" for="w_'+id+'">'+label+'<input id="w_'+id+'" type="'+type+'" value="'+esc(val)+'" '+(type==="number"?'inputmode="decimal" ':"")+(extra||"")+'></label>';}
+function vWizard(){
+  var w=wiz,h='<header><p class="muted small">Step '+w.step+' of 3</p><h1>'+["About you","Your day","Your food"][w.step-1]+'</h1></header><div class="bar"><i style="width:'+(w.step/3*100)+'%"></i></div>';
+  if(w.step===1){
+    h+='<div class="card"><p class="small muted">Used to work out how much you burn and how much to eat. It stays on your device.</p><div class="seg">'+[["m","Male"],["f","Female"]].map(function(o){return '<button class="'+(w.sex===o[0]?"on":"")+'" data-act="wizset" data-f="sex" data-v="'+o[0]+'" aria-pressed="'+(w.sex===o[0])+'">'+o[1]+'</button>';}).join("")+'</div><div class="row three">'+wf("age","Age","number",w.age)+wf("ft","Height, feet","number",w.ft)+wf("inch","and inches","number",w.inch)+'</div><div class="row">'+wf("start","Weight now, lb","number",w.start,'step="0.1"')+wf("goal","Goal weight, lb","number",w.goal,'step="0.1"')+'</div></div>';
+  }else if(w.step===2){
+    h+='<div class="card"><p class="small muted">Meal times are set from when you wake. The kitchen closes 3 hours before bed.</p><div class="row">'+wf("wake","I wake up at","time",w.wake)+wf("bed","I go to bed at","time",w.bed)+'</div></div>';
+    h+='<div class="card"><h3>How active are you?</h3><div class="opts">'+[[1.3,"🪑","Mostly sitting","Desk job, little exercise"],[1.4,"🚶","Some exercise","Desk job plus 1 to 3 workouts a week"],[1.55,"🏃","Very active","On your feet all day, or 4+ workouts a week"]].map(function(o){return '<button class="opt'+(w.act===o[0]?" on":"")+'" data-act="wizset" data-f="act" data-v="'+o[0]+'" aria-pressed="'+(w.act===o[0])+'"><span><span aria-hidden="true">'+o[1]+'</span> <b>'+o[2]+'</b><br><span class="small muted">'+o[3]+'</span></span><span style="font-weight:700">'+(w.act===o[0]?"✓":"")+'</span></button>';}).join("")+'</div></div>';
+  }else{
+    h+='<div class="card"><p class="small muted">Switch on anything that applies. Plates you cannot eat are removed. You can change these later under More.</p>'+FLAGS.map(function(f){return flagBtn(f,!!w[f[0]],"wizflag");}).join("")+'</div>';
+  }
+  if(w.err)h+='<p class="err" role="alert">'+esc(w.err)+'</p>';
+  h+='<div class="row">'+(w.step>1?'<button class="btn" data-act="wizback">Back</button>':"")+'<button class="btn primary big" data-act="'+(w.step<3?"wiznext":"wizdone")+'">'+(w.step<3?"Next":"Build my plan")+'</button></div>';
   return h;
 }
 function fld(id,label,type,val){return '<label class="f" for="f_'+id+'">'+label+'<input id="f_'+id+'" type="'+type+'" value="'+esc(val)+'"'+(type==="number"?' inputmode="decimal" step="0.1"':"")+'></label>';}
@@ -558,8 +610,19 @@ function fld(id,label,type,val){return '<label class="f" for="f_'+id+'">'+label+
 /* ---------- actions ---------- */
 document.addEventListener("click",function(e){
   var b=e.target.closest("[data-act]");if(!b||b.tagName==="INPUT")return;var a=b.dataset.act,k=key(new Date());
+  if(a.indexOf("wiz")===0){wizRead();wiz.err="";
+    if(a==="wizset"){wiz[b.dataset.f]=b.dataset.f==="act"?+b.dataset.v:b.dataset.v;}
+    else if(a==="wizflag"){wiz[b.dataset.f]=!wiz[b.dataset.f];}
+    else if(a==="wizback"){wiz.step--;}
+    else if(a==="wiznext"){if(wiz.step===1){wiz.err=wizCheck();if(wiz.err){render();return;}}
+      if(wiz.step===2&&!(/^\d\d:\d\d/.test(wiz.wake)&&/^\d\d:\d\d/.test(wiz.bed))){wiz.err="Set both times to continue.";render();return;}wiz.step++;}
+    else if(a==="wizdone"){var ws=S.settings;ws.sex=wiz.sex;ws.age=+wiz.age;ws.height=(+wiz.ft)*12+(+wiz.inch||0);ws.start=+wiz.start;ws.goal=+wiz.goal;ws.wake=wiz.wake.slice(0,5);ws.bed=wiz.bed.slice(0,5);ws.act=wiz.act;
+      FLAGS.forEach(function(f){ws[f[0]]=!!wiz[f[0]];});ws.adjust=0;ws.onboarded=true;wiz=null;save();render();window.scrollTo(0,0);return;}
+    render();window.scrollTo(0,0);return;}
+  if(a==="rewiz"){S.settings.onboarded=false;wiz=null;render();window.scrollTo(0,0);return;}
+  if(a==="flag"){S.settings[b.dataset.f]=!S.settings[b.dataset.f];save();render();return;}
   if(a!=="finish")finArmed=false;
-  if(a==="seg"){if(b.dataset.g==="trainday"){trainSel=b.dataset.v;var cw=S.workouts[k];if(cw&&cw.d!==trainSel){cw.by=cw.by||{};cw.by[cw.d]=cw.sets;cw.sets=cw.by[trainSel]||{};cw.d=trainSel;delete cw.fin;save();}}else sub[b.dataset.g]=b.dataset.v;render();return;}
+  if(a==="seg"){if(b.dataset.g==="trainday"){trainSel=b.dataset.v;var cw=S.workouts[k];if(cw&&cw.d!==trainSel){cw.by=cw.by||{};cw.by[cw.d]=cw.sets;cw.sets=cw.by[trainSel]||{};cw.d=trainSel;delete cw.fin;save();}}else if(b.dataset.g==="sex"){S.settings.sex=b.dataset.v;save();}else if(b.dataset.g==="act"){S.settings.act=+b.dataset.v;save();}else sub[b.dataset.g]=b.dataset.v;render();return;}
   if(a==="swap"){swapOpen=swapOpen===b.dataset.id?null:b.dataset.id;render();return;}
   if(a==="editw"){editW=true;wErr="";render();return;}
   if(a==="planday"){planDay=b.dataset.k;render();return;}
@@ -581,7 +644,8 @@ document.addEventListener("click",function(e){
   else if(a==="shopreset"){S.shop={};}
   else if(a==="saveset"){var s=S.settings,ok=true;["start","goal","height","age"].forEach(function(f){var v=parseFloat(document.getElementById("f_"+f).value);if(v>0)s[f]=v;else ok=false;});
     ["wake","bed"].forEach(function(f){var v=document.getElementById("f_"+f).value;if(/^\d\d:\d\d/.test(v))s[f]=v.slice(0,5);else ok=false;});
-    save();render();document.getElementById("setmsg").textContent=ok?"Saved. Plates and times are updated.":"Some fields were empty and kept their old values.";return;}
+    var mg2=minGoal(s.height),note="";if(s.age<18){s.age=18;note=" This plan is for adults, so age was set to 18.";}if(s.goal<mg2){s.goal=Math.ceil(mg2);note+=" Goal raised to "+s.goal+" lb, the lowest healthy weight for your height.";}
+    save();render();document.getElementById("setmsg").textContent=(ok?"Saved. Plates and times are updated.":"Some fields were empty and kept their old values.")+note;return;}
   else if(a==="savekey"){syncKey=document.getElementById("f_key").value.trim();try{localStorage.setItem(SK,syncKey);}catch(err){}setSync(syncKey?"offline":"device");render();pull();return;}
   else if(a==="copyb"){var mm=document.getElementById("bkmsg"),tx=document.getElementById("bk").value;if(navigator.clipboard)navigator.clipboard.writeText(tx).then(function(){mm.textContent="Copied.";},function(){mm.textContent="Could not copy. Select the text and copy it by hand.";});return;}
   else if(a==="importb"){try{var o=JSON.parse(document.getElementById("bk").value);if(!o||typeof o!=="object"||!o.settings)throw 0;S=merge(o);}catch(err){document.getElementById("bkmsg").textContent="That is not a valid backup. Nothing was changed.";return;}}
